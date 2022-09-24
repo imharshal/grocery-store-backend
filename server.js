@@ -16,6 +16,8 @@ const {
   createOrder,
   getAllOrders,
   getOrderByCustomerId,
+  getMaximumOrdersInYear,
+  getCustomerWithMaximumOrder,
 } = require("./controller/OrderController");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -28,6 +30,7 @@ mongoose.connect(
 
 app.post("/customer", createCustomer);
 app.get("/customers", getAllCustomers);
+app.get("/value-customer", getCustomerWithMaximumOrder);
 
 app.get("/products", getAllProducts);
 app.post("/product", createProduct);

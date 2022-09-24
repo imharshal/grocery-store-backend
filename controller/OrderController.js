@@ -48,7 +48,7 @@ module.exports.getAllOrders = async function (req, res) {
   if (req.method === "GET") {
     try {
       const list = await Order.find({});
-      res.status(200).json({ status: true, products: list });
+      res.status(200).json({ status: true, orders: list });
     } catch (e) {
       res.status(500).json({
         status: false,
@@ -59,7 +59,7 @@ module.exports.getAllOrders = async function (req, res) {
   }
 };
 
-//method to fetch product list
+//method to fetch orders list
 module.exports.getOrderByCustomerId = async function (req, res) {
   if (req.method === "GET") {
     try {
@@ -75,11 +75,11 @@ module.exports.getOrderByCustomerId = async function (req, res) {
   }
 };
 
-//method to fetch product list
-module.exports.getOrderByCustomerId = async function (req, res) {
+//method to fetch customer with maximum order
+module.exports.getCustomerWithMaximumOrder = async function (req, res) {
   if (req.method === "GET") {
     try {
-      const list = await Order.find({ customerId: req.params.id });
+      const list = await Order.find({});
       res.status(200).json({ status: true, orders: list });
     } catch (e) {
       res.status(500).json({
