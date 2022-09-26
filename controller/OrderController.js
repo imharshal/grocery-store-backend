@@ -1,3 +1,4 @@
+const Customer = require("../model/Customer");
 const Order = require("../model/Order");
 const Product = require("../model/Product");
 
@@ -26,18 +27,6 @@ module.exports.createOrder = async function (req, res) {
         message: "Order Created Successfully",
       });
     } catch (err) {
-      //   let errors = [];
-      //   for (let i in err.errors) {
-      //     errors.push({
-      //       field: i,
-      //       message: err.errors[i].message,
-      //     });
-      //   }
-      //   res.status(202).json({
-      //     success: false,
-      //     message: "Product creation failed",
-      //     error: errors,
-      //   });
       console.log(err);
     }
   }
@@ -47,7 +36,7 @@ module.exports.createOrder = async function (req, res) {
 module.exports.getAllOrders = async function (req, res) {
   if (req.method === "GET") {
     try {
-      const list = await Order.find({});
+      const list = await Order.find({}).populate("productList");
       res.status(200).json({ status: true, orders: list });
     } catch (e) {
       res.status(500).json({
@@ -63,7 +52,10 @@ module.exports.getAllOrders = async function (req, res) {
 module.exports.getOrderByCustomerId = async function (req, res) {
   if (req.method === "GET") {
     try {
-      const list = await Order.find({ customerId: req.params.id });
+      const list = await Order.find({
+        customerId: req.params.id,
+      }).populate("productList");
+      console.log(list.productsOrdered);
       res.status(200).json({ status: true, orders: list });
     } catch (e) {
       res.status(500).json({
@@ -79,8 +71,19 @@ module.exports.getOrderByCustomerId = async function (req, res) {
 module.exports.getCustomerWithMaximumOrder = async function (req, res) {
   if (req.method === "GET") {
     try {
-      const list = await Order.find({});
-      res.status(200).json({ status: true, orders: list });
+      const customers = await Order.aggregate([
+        {
+          $group: {
+            _id: "$customerId",
+            totalOrders: { $count: {} },
+          },
+        },
+        { $sort: { totalOrders: -1 } },
+      ]);
+      const valueCustomers = await Customer.populate(customers, {
+        path: "_id",
+      });
+      res.status(200).json({ status: true, customers: valueCustomers });
     } catch (e) {
       res.status(500).json({
         status: false,

@@ -6,7 +6,7 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
     },
     productList: {
-      type: [String],
+      type: [{ type: String, ref: "Product" }],
     },
     totalPrice: {
       type: Number,
@@ -17,7 +17,11 @@ const orderSchema = new mongoose.Schema(
       },
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: { virtuals: true, versionKey: false },
+    id: false,
+  }
 );
 
 orderSchema.virtual("customer", {
